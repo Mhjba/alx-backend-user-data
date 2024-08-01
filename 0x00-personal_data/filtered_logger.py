@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 A module for filtering logs.
-
 """
 
 import re
@@ -58,37 +57,39 @@ def get_logger() -> logging.Logger:
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Creates a connector to a database.
     """
-    Returns a connector to the database
-    """
-    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
-    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
-    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-    dbname = os.getenv('PERSONAL_DATA_DB_NAME', 'my_db')
-
-    return mysql.connector.connect(
-        user=username,
-        password=password,
-        host=host,
-        database=dbname
+    db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME", "")
+    db_user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    db_pwd = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    connection = mysql.connector.connect(
+        host=db_host,
+        port=3306,
+        user=db_user,
+        password=db_pwd,
+        database=db_name,
     )
+    return connection
 
 
 def main() -> None:
     """
-    Main function to retrieve data from database
+    Main function to retrieve data from the database and log it.
     """
+    logger = get_logger()
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users;")
     for row in cursor:
         message = f"name={row[0]}; email={row[1]}; phone={row[2]}; " +\
-            f"ssn={row[3]}; password={row[4]};ip={row[5]}; " +\
+            f"ssn={row[3]}; password={row[4]}; ip={row[5]}; " +\
             f"last_login={row[6]}; user_agent={row[7]};"
-        print(message)
+        logger.info(message)
     cursor.close()
     db.close()
 
 
 if __name__ == '__main__':
     main()
+
