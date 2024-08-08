@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ Module of User Authentication """
+from os import getenv
 from flask import jsonify, abort, request
 from api.v1.views import app_views
 from typing import TypeVar, List
@@ -34,3 +35,10 @@ class Auth:
         """Current user
         """
         return None
+
+    def session_cookie(self, request=None):
+        """session cookie"""
+        if request is None:
+            return None
+        _my_session_id = getenv("SESSION_NAME")
+        return request.cookies.get(_my_session_id)
