@@ -18,6 +18,15 @@ auth = getenv("AUTH_TYPE")
 if auth == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
+elif auth == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
+elif auth == "session_db_auth":
+    from api.v1.auth.session_db_auth import SessionDBAuth
+    auth = SessionDBAuth()
+elif auth == "session_exp_auth":
+    from api.v1.auth.session_exp_auth import SessionExpAuth
+    auth = SessionExpAuth()
 else:
     from api.v1.auth.auth import Auth
     auth = Auth()
@@ -25,16 +34,21 @@ else:
 
 @app.before_request
 def handle_before_request() -> None:
-    """Before request"""
-    auth_req = ['/api/v1/status/',
-                 '/api/v1/unauthorized/',
-                 '/api/v1/forbidden/']
+    """runs before each request"""
+    excluded_paths = [
+        '/api/v1/status/',
+        '/api/v1/unauthorized/',
+        '/api/v1/auth_session/login/',
+        '/api/v1/forbidden/'
+    ]
     if auth:
-        if auth.require_auth(request.path, auth_req):
-            if not auth.authorization_header(request):
+        if auth.require_auth(request.path, excluded_paths):
+            if (not auth.authorization_header(request) and
+                    not auth.session_cookie(request)):
                 abort(401)
             if not auth.current_user(request):
                 abort(403)
+            request.current_user = auth.current_user(request)
 
 
 @app.errorhandler(404)
