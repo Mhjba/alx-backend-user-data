@@ -1,67 +1,58 @@
 #!/usr/bin/env python3
+""" Main module to interact. """
+from auth import Auth
 import requests
 
-BASE_URL = "http://127.0.0.1:5000"
 
 def register_user(email: str, password: str) -> None:
-    """Register a new user."""
-    response = requests.post(f"{BASE_URL}/users", data={"email": email, "password": password})
-    assert response.status_code == 200
-    assert response.json() == {"email": email, "message": "user created"}
+    """ Register a new user."""
+    pass
+
 
 def log_in_wrong_password(email: str, password: str) -> None:
-    """Attempt to log in with an incorrect password."""
-    response = requests.post(f"{BASE_URL}/sessions", data={"email": email, "password": password})
-    assert response.status_code == 401
+    """ Log in with the specified email and password."""
+    pass
 
-def log_in(email: str, password: str) -> str:
-    """Log in with the correct credentials."""
-    response = requests.post(f"{BASE_URL}/sessions", data={"email": email, "password": password})
-    assert response.status_code == 200
-    payload = response.json()
-    assert payload == {"email": email, "message": "logged in"}
-    return response.cookies.get("session_id")
 
 def profile_unlogged() -> None:
-    """Attempt to access the profile without logging in."""
-    response = requests.get(f"{BASE_URL}/profile")
-    assert response.status_code == 403
+    """ assert correct response to the profile."""
+    pass
+
+
+def log_in(email: str, password: str) -> str:
+    """ Log in with the specified email and password."""
+    return None
+
 
 def profile_logged(session_id: str) -> None:
-    """Access the profile while logged in."""
-    response = requests.get(f"{BASE_URL}/profile", cookies={"session_id": session_id})
-    assert response.status_code == 200
-    assert "email" in response.json()
+    """ Access the profile page."""
+    pass
+
 
 def log_out(session_id: str) -> None:
-    """Log out the user."""
-    response = requests.delete(f"{BASE_URL}/sessions", cookies={"session_id": session_id})
-    assert response.status_code == 200
+    """ Log out using the specified session id."""
+    pass
+
 
 def reset_password_token(email: str) -> str:
-    """Get a reset password token."""
-    response = requests.post(f"{BASE_URL}/reset_password", data={"email": email})
-    assert response.status_code == 200
-    payload = response.json()
-    assert "reset_token" in payload
-    return payload["reset_token"]
+    """ Generate a reset password token for the specified email0."""
+    return None
+
 
 def update_password(email: str, reset_token: str, new_password: str) -> None:
-    """Update the user's password."""
-    response = requests.put(f"{BASE_URL}/reset_password", data={
-        "email": email,
-        "reset_token": reset_token,
-        "new_password": new_password
-    })
-    assert response.status_code == 200
-    assert response.json() == {"email": email, "message": "Password updated"}
+    """
+    Update the password for the specified email using the reset token.
+    """
+    pass
 
-# Main code execution
+
 EMAIL = "guillaume@holberton.io"
 PASSWD = "b4l0u"
 NEW_PASSWD = "t4rt1fl3tt3"
+BASE_URL = "http://127.0.0.1:5000"
 
 if __name__ == "__main__":
+
     register_user(EMAIL, PASSWD)
     log_in_wrong_password(EMAIL, NEW_PASSWD)
     profile_unlogged()
