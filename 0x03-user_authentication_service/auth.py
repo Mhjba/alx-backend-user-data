@@ -11,8 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 def _hash_password(password: str) -> str:
     """Hashes a password."""
-    return bcrypt.hashpw(password.encode('utf-8'),
-	   bcrypt.gensalt()).decode('utf-8')
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 
 def _generate_uuid() -> str:
@@ -41,8 +40,9 @@ class Auth:
         """Validate login credentials."""
         try:
             user = self._db.find_user_by(email=email)
-            return bcrypt.checkpw(password.encode('utf-8'),
-		   user.hashed_password.encode('utf-8'))
+            return bcrypt.checkpw(
+                password.encode('utf-8'),
+                user.hashed_password)
         except NoResultFound:
             return False
 
